@@ -74,7 +74,7 @@ jobs:
             ${{ steps.cache-key.outputs.buildtool-monthly-cache-key }}-
       - name: Restore Maven/Gradle Dependency/Dist Caches
         uses: actions/cache/restore@v4
-        # if it a pull request, we restore the cache but we don't save it
+        # if it is a pull request, we restore the cache but we don't save it
         if: github.event_name == 'pull_request'
         with:
           path: |
