@@ -37,7 +37,7 @@ jobs:
         env:
           RDBMS: ${{ matrix.rdbms }}
           RUNID: ${{ github.run_number }}
-        run: ci/database-start.sh
+        run: .github/database-start.sh
       - name: Set up Java 21
         uses: graalvm/setup-graalvm@v1
         with:
