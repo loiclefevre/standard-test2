@@ -11,4 +11,6 @@ function logAndExec() {
   exec "${@}"
 }
 
+echo "DIR: `pwd`"
+
 logAndExec ./gradlew test ${goal} "${@}" -Plog-test-progress=true --stacktrace
