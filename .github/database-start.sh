@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 echo "Managing Oracle Autonomous Database..."
 export INFO=$(curl -s -k -L -X GET "https://api.testpilot-controller.oraclecloud.com/ords/testpilot/admin/database?type=autonomous" -H 'accept: application/json')
