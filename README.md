@@ -1,2 +1,2 @@
 # standard-test
-v1.0.18
+v1.0.19
