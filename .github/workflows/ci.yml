@@ -12,7 +12,7 @@ permissions: { } # none
 
 concurrency:
   group: "workflow = ${{ github.workflow }}, ref = ${{ github.event.ref }}, pr = ${{ github.event.pull_request.id }}"
-  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.repository != 'TheDataWarriors/standard-test' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.repository != 'loiclefevre/standard-test2' }}
 
 jobs:
 
@@ -47,7 +47,7 @@ jobs:
       - name: Generate cache key
         id: cache-key
         run: |
-          CURRENT_BRANCH="${{ github.repository != 'TheDataWarriors/standard-test' && 'fork' || github.base_ref || github.ref_name }}"
+          CURRENT_BRANCH="${{ github.repository != 'loiclefevre/standard-test2' && 'fork' || github.base_ref || github.ref_name }}"
           CURRENT_MONTH=$(/bin/date -u "+%Y-%m")
           CURRENT_DAY=$(/bin/date -u "+%d")
           ROOT_CACHE_KEY="buildtool-cache-atlas"
