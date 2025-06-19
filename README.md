@@ -1,2 +1,2 @@
-# standard-test2
-v1.0.22
+# standard-test3
+v1.0.24

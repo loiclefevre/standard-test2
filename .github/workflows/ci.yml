@@ -10,13 +10,17 @@ on:
 
 permissions: { } # none
 
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
 concurrency:
   group: "workflow = ${{ github.workflow }}, ref = ${{ github.event.ref }}, pr = ${{ github.event.pull_request.id }}"
   cancel-in-progress: ${{ github.event_name == 'pull_request' || github.repository != 'loiclefevre/standard-test2' }}
 
 jobs:
 
-  atlas:
+  testpilot:
     permissions:
       contents: read
     name: GraalVM 21 - ${{matrix.rdbms}}
@@ -26,25 +30,43 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - rdbms: oracle_atps
+          - rdbms: autonomous-transaction-processing-serverless
+          - rdbms: base-database-service-23ai
+          #- rdbms: base-database-service-21c
+          #- rdbms: base-database-service-19c
     steps:
+      - id: build_guard
+        uses: loiclefevre/test@v1.0.11
+        with:
+          action: skip-testing
+          prefix_list: .github/workflows/ci.yml,README.md,LICENSE,.gitignore
+
       - uses: actions/checkout@v4
+        if: steps.build_guard.outputs.skip_tests == 'no'
         with:
           persist-credentials: false
+
       - name: Reclaim disk space and sanitize user home
+        if: steps.build_guard.outputs.skip_tests == 'no'
         run: .github/ci-prerequisites.sh
-      - name: Start database
-        env:
-          RDBMS: ${{ matrix.rdbms }}
-          RUNID: ${{ github.run_number }}
-        run: .github/database-start.sh
+
+      # test
+      - id: create_database
+        if: steps.build_guard.outputs.skip_tests == 'no'
+        uses: loiclefevre/test@v1.0.11
+        with:
+          oci-service: ${{ matrix.rdbms }}
+          action: create
+          user: test,loic
+
       - name: Set up Java 21
+        if: steps.build_guard.outputs.skip_tests == 'no'
         uses: graalvm/setup-graalvm@v1
         with:
           distribution: 'graalvm'
           java-version: '21'
-
       - name: Generate cache key
+        if: steps.build_guard.outputs.skip_tests == 'no'
         id: cache-key
         run: |
           CURRENT_BRANCH="${{ github.repository != 'loiclefevre/standard-test2' && 'fork' || github.base_ref || github.ref_name }}"
@@ -58,7 +80,7 @@ jobs:
         id: cache-maven
         uses: actions/cache@v4
         # if it's not a pull request, we restore and save the cache
-        if: github.event_name != 'pull_request'
+        if: steps.build_guard.outputs.skip_tests == 'no' && github.event_name != 'pull_request'
         with:
           path: |
             ~/.m2/repository/
@@ -75,7 +97,7 @@ jobs:
       - name: Restore Maven/Gradle Dependency/Dist Caches
         uses: actions/cache/restore@v4
         # if it is a pull request, we restore the cache but we don't save it
-        if: github.event_name == 'pull_request'
+        if: steps.build_guard.outputs.skip_tests == 'no' && github.event_name == 'pull_request'
         with:
           path: |
             ~/.m2/repository/
@@ -88,26 +110,42 @@ jobs:
             ${{ steps.cache-key.outputs.buildtool-monthly-cache-key }}-
 
       - name: Run build script
+        if: steps.build_guard.outputs.skip_tests == 'no'
         env:
           RDBMS: ${{ matrix.rdbms }}
           RUNID: ${{ github.run_number }}
+          HOST: ${{ steps.create_database.outputs.database_host }}
+          SERVICE: ${{ steps.create_database.outputs.database_service }}
+          PASSWORD: ${{ steps.create_database.outputs.database_password }}
+          TESTPILOT_CLIENT_ID: ""
+          TESTPILOT_TOKEN: ""
+          #LD_PRELOAD: /home/ubuntu/libtfojdbc1.so
+          #LD_LIBRARY_PATH: /home/ubuntu
           # These runners have no HOME variable set by default, we need to explicitly set it to make the build work
-          HOME: /root
+          #HOME: /root
         run: ./.github/build-github.sh
         shell: bash
+
+      - uses: loiclefevre/test@v1.0.11
+        if: steps.build_guard.outputs.skip_tests == 'no'
+        with:
+          oci-service: ${{ matrix.rdbms }}
+          action: delete
+          user: test,loic
+
       # Upload build scan data.
       # The actual publishing must be done in a separate job (see ci-report.yml).
       # We don't write to the remote cache as that would be unsafe.
       # That's even on push, because we do not trust Atlas runners to hold secrets: they are shared infrastructure.
       - name: Upload GitHub Actions artifact for the Develocity build scan
         uses: actions/upload-artifact@v4
-        if: "${{ !cancelled() }}"
+        if: "${{ !cancelled() && steps.build_guard.outputs.skip_tests == 'no' }}"
         with:
           name: build-scan-data-${{ matrix.rdbms }}
           path: ~/.gradle/build-scan-data
       - name: Upload test reports (if Gradle failed)
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: failure() && steps.build_guard.outputs.skip_tests == 'no'
         with:
           name: test-reports-java11-${{ matrix.rdbms }}
           path: |
