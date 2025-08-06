@@ -36,5 +36,8 @@ jobs:
           umask
           ls -l /home/ubuntu/actions-runner/_work/_temp
           echo $GITHUB_OUTPUT
+          echo "key=value" >> $GITHUB_OUTPUT
+          echo "::add-mask::value2"
+          echo "key=value2" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
           
