@@ -29,9 +29,12 @@ jobs:
       fail-fast: false
 
     steps:
-      - id: number_1
+      - id: step_1
+        name: step 1
         run: |
           id
           umask
           ls -l /home/ubuntu/actions-runner/_work/_temp
           echo $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+          
