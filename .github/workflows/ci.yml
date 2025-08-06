@@ -54,3 +54,13 @@ jobs:
           echo "Values retrieved from previous step:"
           echo ${{steps.step_1.outputs.key1}}
           echo ${{steps.step_1.outputs.key2}}
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Java 21
+        uses: graalvm/setup-graalvm@v1
+        with:
+          distribution: 'graalvm'
+          java-version: '21'
