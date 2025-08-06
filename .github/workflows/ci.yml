@@ -24,7 +24,7 @@ jobs:
     permissions:
       contents: read
     name: GITHUB_OUTPUT tests
-    runs-on: [ self-hosted, Linux, X64, OCI ]
+    runs-on: [ self-hosted, Linux, X64, OracleTestPilot ]
     strategy:
       fail-fast: false
 
