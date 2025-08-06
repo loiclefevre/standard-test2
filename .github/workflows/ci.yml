@@ -36,8 +36,15 @@ jobs:
           umask
           ls -l /home/ubuntu/actions-runner/_work/_temp
           echo $GITHUB_OUTPUT
-          echo "key=value" >> $GITHUB_OUTPUT
+          echo "key1=value1" >> $GITHUB_OUTPUT
           echo "::add-mask::value2"
-          echo "key=value2" >> $GITHUB_OUTPUT
+          echo "key2=value2" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
           
+      - id: step_2
+        name: step 2
+        run: |
+          ls -l /home/ubuntu/actions-runner/_work/_temp
+          echo $GITHUB_OUTPUT
+          echo ${{steps.step_1.outputs.key1}}
+          echo ${{steps.step_1.outputs.key2}}
