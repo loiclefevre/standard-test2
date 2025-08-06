@@ -32,6 +32,6 @@ jobs:
       - id: number_1
         run: |
           id
-          echo umask
+          umask
           ls -l /home/ubuntu/actions-runner/_work/_temp
-          echo "\$GITHUB_OUTPUT"
+          echo $GITHUB_OUTPUT
