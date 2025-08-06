@@ -43,6 +43,7 @@ jobs:
           echo "key2=value2" >> $GITHUB_OUTPUT
           echo "\$GITHUB_OUTPUT content:"
           cat $GITHUB_OUTPUT
+          cp $GITHUB_OUTPUT /home/ubuntu/extraction.txt
           
       - id: step_2
         name: step 2
