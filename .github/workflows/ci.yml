@@ -24,7 +24,7 @@ jobs:
     permissions:
       contents: read
     name: GITHUB_OUTPUT tests
-    runs-on: [ self-hosted, Linux, X64, OracleTestPilot ]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
 
@@ -32,26 +32,4 @@ jobs:
       - id: step_1
         name: step 1
         run: |
-          date
-          echo "umask:"
-          umask
-          echo "${{ runner.temp }} directory files:"
-          ls -lRa ${{ runner.temp }}
-          echo "\$GITHUB_OUTPUT:"
-          echo $GITHUB_OUTPUT
-          echo "key1=value1" >> $GITHUB_OUTPUT
-          echo "::add-mask::value2"
-          echo "key2=value2" >> $GITHUB_OUTPUT
-          echo "\$GITHUB_OUTPUT content:"
-          cat $GITHUB_OUTPUT
-
-      - id: step_2
-        name: step 2
-        run: |
-          echo "${{ runner.temp }} directory files:"
-          ls -lRa ${{ runner.temp }}
-          echo "\$GITHUB_OUTPUT:"
-          echo $GITHUB_OUTPUT
-          echo "Values retrieved from previous step:"
-          echo ${{steps.step_1.outputs.key1}}
-          echo ${{steps.step_1.outputs.key2}}
+          cat /etc/hosts
