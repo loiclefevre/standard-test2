@@ -33,3 +33,4 @@ jobs:
         name: step 1
         run: |
           cat /etc/hosts
+          nslookup miningmadness.com
