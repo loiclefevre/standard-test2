@@ -20,7 +20,7 @@ public class ExampleTest {
 					if (r.next()) {
 						System.out.println("Now sleeping for 5 minutes...");
 						try {
-							Thread.sleep( 5L/*60L*/*1000L ); // 5 minutes
+							Thread.sleep( 5L*60L*1000L ); // 5 minutes
 						}
 						catch (InterruptedException ignored) {
 						}
