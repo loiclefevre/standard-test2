@@ -18,9 +18,9 @@ public class ExampleTest {
 			try (Statement s = c.createStatement()) {
 				try (ResultSet r = s.executeQuery("select 'Hello from database!' from dual")) {
 					if (r.next()) {
-						System.out.println("Now sleeping for 5 minutes.....");
+						System.out.println("Now sleeping for 1 minute...");
 						try {
-							Thread.sleep( 5L*60L*1000L ); // 5 minutes
+							Thread.sleep( 60L*1000L ); // 1 minute
 						}
 						catch (InterruptedException ignored) {
 						}
